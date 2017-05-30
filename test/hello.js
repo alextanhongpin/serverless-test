@@ -5,7 +5,8 @@
 
 const mod = require('../handler.js')
 const mochaPlugin = require('serverless-mocha-plugin')
-
+const AWS = require('aws-sdk-mock')
+ 
 // LambdaTester does not work with node.js 7.x
 // const LambdaTester = require('lambda-tester')
 // const helloHandler = require('../handler.js')
@@ -13,7 +14,10 @@ const mochaPlugin = require('serverless-mocha-plugin')
 const lambdaWrapper = mochaPlugin.lambdaWrapper
 const expect = mochaPlugin.chai.expect
 const wrapped = lambdaWrapper.wrap(mod, { handler: 'hello' })
+ 
 
+
+ 
 describe('hello', () => {
   before((done) => {
     // lambdaWrapper.init(liveFunction); // Run the deployed lambda
@@ -43,5 +47,9 @@ describe('hello', () => {
       expect(body.input.name).to.be.eq('hello')
       expect(body.input.age).to.be.eq(1)
     })
+  })
+
+  it ('should publish the message', () => {
+    AWS.mock('SNS', 'publish', 'test-message')
   })
 })

@@ -13,7 +13,11 @@ $ npm i -g mocha
 # Install the serverless-mocha-plugin as development dependencies
 $ npm i --save-dev serverless-mocha-plugin
 
+$ npm i -g serverless
+
 ```
+
+You might also need to include your `AWS_SECRET_ACCESS_KEY` and `AWS_ACCESS_KEY_ID` in your environment.
 
 ### Add Test Plugin
 
@@ -63,5 +67,25 @@ Now you can run the test with the command:
 ```bash
 # Invokes the test
 $ sls invoke test
+```
+
+### Mock Dependencies
+
+If you are using SQS, SNS, or DynamoDB, you can mock them using the library `aws-sdk-mock`:
+
+```js
+const AWS = require('aws-sdk-mock')
+ 
+AWS.mock('DynamoDB', 'putItem', function (params, callback){
+  callback(null, "successfully put item in database")
+})
+ 
+AWS.mock('SNS', 'publish', 'test-message')
+ 
+/**
+    TESTS
+**/
+ 
+AWS.restore('SNS', 'publish')
 ```
 
