@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "lambda-tester": "^3.0.2",
     "serverless-mocha-plugin": "^1.3.5"
   }
 }

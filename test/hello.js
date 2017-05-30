@@ -6,14 +6,17 @@
 const mod = require('../handler.js')
 const mochaPlugin = require('serverless-mocha-plugin')
 
+// LambdaTester does not work with node.js 7.x
+// const LambdaTester = require('lambda-tester')
+// const helloHandler = require('../handler.js')
+
 const lambdaWrapper = mochaPlugin.lambdaWrapper
 const expect = mochaPlugin.chai.expect
 const wrapped = lambdaWrapper.wrap(mod, { handler: 'hello' })
 
 describe('hello', () => {
   before((done) => {
-//  lambdaWrapper.init(liveFunction); // Run the deployed lambda
-
+    // lambdaWrapper.init(liveFunction); // Run the deployed lambda
     done()
   })
 
@@ -24,15 +27,21 @@ describe('hello', () => {
   })
 
   it('should return the correct status code', () => {
-  	return wrapped.run({}).then((response) => {
-  		expect(response.statusCode).to.be.equal(200)
-  	})
+    return wrapped.run({}).then((response) => {
+      expect(response.statusCode).to.be.equal(200)
+    })
   })
 
   it('should return the correct body', () => {
-  	return wrapped.run({}).then((response) => {
-  		const body = JSON.parse(response.body)
-  		expect(body.message).to.be.equal('Go Serverless v1.0! Your function executed successfully!')
-  	})
+    const event = {
+      name: 'hello',
+      age: 1
+    }
+    return wrapped.run(event).then((response) => {
+      const body = JSON.parse(response.body)
+      expect(body.message).to.be.equal('Go Serverless v1.0! Your function executed successfully!')
+      expect(body.input.name).to.be.eq('hello')
+      expect(body.input.age).to.be.eq(1)
+    })
   })
 })
